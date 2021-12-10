@@ -37,8 +37,9 @@ const container = document.querySelector('.container');
  regionButtons.forEach((region)=>{
    region.addEventListener('click',function(e){
     getCountrysByRegion(region.textContent);
-    console.log(regions[region.textContent].div);
+    // console.log(regions[region.textContent].div);
     container.appendChild(regions[region.textContent].div);
+    console.log(worldData);
    })
  })
 
@@ -58,7 +59,7 @@ async function getCountrysByRegion(region){
  function addCountriesAndElements(data,region,divElement){
    data.forEach((country)=>{
     addCountriesButtons(country.name.common,divElement);
-    // getDataforCountry(country);
+    getDataforCountry(country.cca2,region);
     regionincludeCountryes[region].push({name: country.name.common ,cca2: country.cca2});
    })
 }
@@ -72,12 +73,13 @@ async function getCountrysByRegion(region){
 // addAllCountriesToAllRegions();
 // console.log(regionincludeCountryes);
 
-async function getDataforCountry(country){
+async function getDataforCountry(country,region){
   try{
     const result = await fetch(`https://intense-mesa-62220.herokuapp.com/https://corona-api.com/countries/${country}`);
-    console.log(result);
+    // console.log(result);
     const data = await  result.json();
-    console.log(data);
+    // console.log(data);
+    storecountryDetails(region,data)
   }catch(e){
     console.log(e);
   }
@@ -95,8 +97,19 @@ function createDivElement(region){
   console.log(countriesContainer); 
   regions[region].div = countriesContainer;
 }
-// createDivElement('asia');
-// console.log(regions.asia);
-// console.log(container);
-// container.appendChild(regions.asia.div);
+
+function storecountryDetails(region,data){
+  console.log(data.data.name.replace());
+  // console.log(region);
+  // worldData[region].data.data.name = {
+  //   confirmedCases: data.data.latest_data.confirmed,
+  //   NumberOfDeaths: data.data.latest_data.deaths,
+  //   NumberOfRrecovered: data.data.latest_data.recovered,
+  //   NumberOfCriticalCondition: data.data.latest_data.critical,
+  //   newCases: data.data.today.confirmed,
+  //   newDeaths: data.data.today.deaths
+  // }
+}
+
+// getDataforCountry('AZ');
 
