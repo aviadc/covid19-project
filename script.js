@@ -11,6 +11,40 @@
 //
 // 
 //
+
+const labels = [
+  'ffff',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+];
+
+const data = {
+  labels: labels,
+  datasets: [{
+    label: 'My First dataset',
+    backgroundColor: 'rgb(255, 99, 132)',
+    borderColor: 'rgb(255, 99, 132)',
+    data: [0,50, 100,50,0],
+  }]
+};
+
+const config = {
+  type: 'line',
+  data: data,
+  options: {
+    responsive: true,
+  }
+};
+
+const myChart = new Chart(
+  document.getElementById('myChart'),
+  config
+);
+
 const regions = {
   asia: {name: 'asia'},
   europe: {name: 'europe'},
@@ -32,19 +66,31 @@ const worldData = {
   americas: {}
 };
 
-const regionButtons = document.querySelectorAll('button');
+
+const staButtonsWasCalled = false;
+
+const regionButtons = document.querySelectorAll('.continent-btn');
 const container = document.querySelector('.container');
+const statAndContinentContainer = document.querySelectorAll('.stat-and-continent-container');
 
-
+// container.addEventListener('click',(e)=>{
+//   console.log(e.target.textContent);
+// })
 
 
  console.log(regionButtons); 
  regionButtons.forEach((region)=>{
    region.addEventListener('click',function(e){
-    getCountrysByRegion(region.textContent);
-    // console.log(regions[region.textContent].div);
+    container.removeChild(container.lastChild);
+    if(!regions[region.textContent].wasFetched){
+      getCountrysByRegion(region.textContent);
+    }
     container.appendChild(regions[region.textContent].div);
-    console.log(worldData);
+    regions[region.textContent].wasFetched = true;
+    if(!staButtonsWasCalled){
+      createStatButtons();
+      staButtonsWasCalled=true;
+    }
    })
  })
 
@@ -99,7 +145,10 @@ function addCountriesButtons(country,divElement){
 
 function createDivElement(region){
   const countriesContainer = document.createElement('div');
-  console.log(countriesContainer); 
+  countriesContainer.classList.add('countries-conrainer');
+  countriesContainer.addEventListener('click',(e)=>{
+    console.log(e.target.textContent);
+  })
   regions[region].div = countriesContainer;
 }
 
@@ -115,6 +164,20 @@ function storecountryDetails(region,data){
     newCases: data.data.today.confirmed,
     newDeaths: data.data.today.deaths
   }
+}
+
+function createStatButtons(){
+  const statContainer = document.createElement('div');
+  const confirmed = document.createElement('button');
+  confirmed.textContent = 'confirmed';
+  const deaths = document.createElement('button');
+  deaths.textContent = 'deaths';
+  const recoverd = document.createElement('button');
+  recoverd.textContent = 'recoverd';
+  const critical = document.createElement('button');
+  critical.textContent = 'critical';
+  statContainer.append(confirmed,deaths,recoverd,critical);
+  statAndContinentContainer.prepend(statContainer);
 }
 
 // getDataforCountry('AZ');

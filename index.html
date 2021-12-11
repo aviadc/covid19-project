@@ -4,18 +4,29 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
   <title>COVID-19</title>
 </head>
 <body>
   <div class="container">
-    <button id="asia-btn">asia</button>
-    <button id="europe-btn">europe</button>
-    <button id="africa-btn">africa</button>
-    <button id="americas-btn">americas</button>
+    <div id="chart-container">
+      <canvas id="myChart"></canvas>
+    </div>
+    <div class="stat-and-continent-container">
+      <div class="continents-container">
+        <button class="continent-btn">asia</button>
+        <button class="continent-btn">europe</button>
+        <button class="continent-btn">africa</button>
+        <button class="continent-btn">americas</button>
+      </div>
+    </div>
+    <div></div>
    
   
   </div>
  
 </body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/script.js"></script>
+<!-- <script src="/chart.js"></script> -->
 </html>
