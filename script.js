@@ -25,7 +25,12 @@ const regionincludeCountryes = {
   africa: [],
 }
 
-const worldData = {};
+const worldData = {
+  asia: {},
+  africa: {},
+  europe: {},
+  americas: {}
+};
 
 const regionButtons = document.querySelectorAll('button');
 const container = document.querySelector('.container');
@@ -99,16 +104,17 @@ function createDivElement(region){
 }
 
 function storecountryDetails(region,data){
-  console.log(data.data.name.replace());
+  const name = data.data.name.split(' ').join('');
   // console.log(region);
-  // worldData[region].data.data.name = {
-  //   confirmedCases: data.data.latest_data.confirmed,
-  //   NumberOfDeaths: data.data.latest_data.deaths,
-  //   NumberOfRrecovered: data.data.latest_data.recovered,
-  //   NumberOfCriticalCondition: data.data.latest_data.critical,
-  //   newCases: data.data.today.confirmed,
-  //   newDeaths: data.data.today.deaths
-  // }
+  worldData[region][name] = 
+  {
+    confirmedCases: data.data.latest_data.confirmed,
+    NumberOfDeaths: data.data.latest_data.deaths,
+    NumberOfRrecovered: data.data.latest_data.recovered,
+    NumberOfCriticalCondition: data.data.latest_data.critical,
+    newCases: data.data.today.confirmed,
+    newDeaths: data.data.today.deaths
+  }
 }
 
 // getDataforCountry('AZ');
