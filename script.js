@@ -12,17 +12,11 @@
 // 
 //
 
-const labels = [
-  'ffff',
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
+let labels = [
+  
 ];
 
-const data = {
+let data = {
   labels: labels,
   datasets: [{
     label: 'My First dataset',
@@ -40,10 +34,7 @@ const config = {
   }
 };
 
-const myChart = new Chart(
-  document.getElementById('myChart'),
-  config
-);
+
 
 const regions = {
   asia: {name: 'asia'},
@@ -59,19 +50,28 @@ const regionincludeCountryes = {
   africa: [],
 }
 
-const worldData = {
+const worldDataObj = {
   asia: {},
   africa: {},
   europe: {},
   americas: {}
 };
 
+const worldDataObjArr = {
+  asia: {},
+  africa: {},
+  europe: {},
+  americas: {}
+}
 
-const staButtonsWasCalled = false;
+
+let staButtonsWasCalled = false;
+
+
 
 const regionButtons = document.querySelectorAll('.continent-btn');
 const container = document.querySelector('.container');
-const statAndContinentContainer = document.querySelectorAll('.stat-and-continent-container');
+const statAndContinentContainer = document.querySelector('.stat-and-continent-container');
 
 // container.addEventListener('click',(e)=>{
 //   console.log(e.target.textContent);
@@ -130,7 +130,7 @@ async function getDataforCountry(country,region){
     // console.log(result);
     const data = await  result.json();
     // console.log(data);
-    storecountryDetails(region,data)
+    storecountryDetailsObj(region,data)
   }catch(e){
     console.log(e);
   }
@@ -152,10 +152,10 @@ function createDivElement(region){
   regions[region].div = countriesContainer;
 }
 
-function storecountryDetails(region,data){
+function storecountryDetailsObj(region,data){
   const name = data.data.name.split(' ').join('');
   // console.log(region);
-  worldData[region][name] = 
+  worldDataObj[region][name] = 
   {
     confirmedCases: data.data.latest_data.confirmed,
     NumberOfDeaths: data.data.latest_data.deaths,
@@ -166,7 +166,12 @@ function storecountryDetails(region,data){
   }
 }
 
+function regionincludeCountryesArr(region,data){
+
+}
+
 function createStatButtons(){
+  console.log('hey');
   const statContainer = document.createElement('div');
   const confirmed = document.createElement('button');
   confirmed.textContent = 'confirmed';
@@ -182,3 +187,21 @@ function createStatButtons(){
 
 // getDataforCountry('AZ');
 
+function createChart(stat,region){
+  switch(stat){
+    case 'confirmed':
+      labels = regionincludeCountryes.region;
+      data.data = []
+      break;
+    case 'deaths':
+      break;
+    case 'recoverd':
+      break;
+    case 'critical':
+      break;
+  }
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+}
