@@ -12,21 +12,25 @@
 // 
 //
 
-let labels = [
-  
-];
-
-let data = {
-  labels: labels,
-  datasets: [{
-    label: 'My First dataset',
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
-    data: [0,50, 100,50,0],
-  }]
+// const labels = [
+//   'January',
+//   'February',
+//   'March',
+//   'April',
+//   'May',
+//   'June',
+// ];
+const data = {
+  // labels: labels,
+  // datasets: [{
+  //   label: 'My First dataset',
+  //   backgroundColor: 'rgb(255, 99, 132)',
+  //   borderColor: 'rgb(255, 99, 132)',
+  //   data: [0, 10, 5, 2, 20, 30, 45],
+  // }]
 };
 
-const config = {
+let config = {
   type: 'line',
   data: data,
   options: {
@@ -57,7 +61,7 @@ const worldDataObj = {
   americas: {}
 };
 
-const worldDataObjArr = {
+const worldDataArr = {
   asia: {},
   africa: {},
   europe: {},
@@ -65,34 +69,50 @@ const worldDataObjArr = {
 }
 
 
-let staButtonsWasCalled = false;
+let statButtonsWasCalled = false;
+let selectedRegion = '';
 
+
+const myChart = new Chart(
+  document.getElementById('myChart'),
+  config
+);
 
 
 const regionButtons = document.querySelectorAll('.continent-btn');
 const container = document.querySelector('.container');
 const statAndContinentContainer = document.querySelector('.stat-and-continent-container');
-
-// container.addEventListener('click',(e)=>{
-//   console.log(e.target.textContent);
-// })
+const chartContainer = document.querySelector('.chart-container');
 
 
- console.log(regionButtons); 
- regionButtons.forEach((region)=>{
-   region.addEventListener('click',function(e){
-    container.removeChild(container.lastChild);
-    if(!regions[region.textContent].wasFetched){
-      getCountrysByRegion(region.textContent);
-    }
-    container.appendChild(regions[region.textContent].div);
-    regions[region.textContent].wasFetched = true;
-    if(!staButtonsWasCalled){
-      createStatButtons();
-      staButtonsWasCalled=true;
-    }
-   })
- })
+
+
+
+createEventlistenerForContinent();
+
+
+//  console.log(regionButtons); 
+
+function createEventlistenerForContinent(){
+  regionButtons.forEach((region)=>{
+    region.addEventListener('click',function(e){
+     container.removeChild(container.lastChild);
+     if(!regions[region.textContent].wasFetched){
+       getCountrysByRegion(region.textContent);
+     }
+     container.appendChild(regions[region.textContent].div);
+     regions[region.textContent].wasFetched = true;
+     if(!statButtonsWasCalled){
+       createStatButtons();
+       statButtonsWasCalled=true;
+     }
+    
+     updateChart();
+     
+    console.log(worldDataArr);
+    })
+  })
+}
 
 async function getCountrysByRegion(region){
   createDivElement(region);
@@ -100,7 +120,7 @@ async function getCountrysByRegion(region){
     const result = await fetch(`https://intense-mesa-62220.herokuapp.com/https://restcountries.herokuapp.com/api/v1/region/${region}`);
     // console.log(result);
     const data = await result.json();
-    // console.log(data);
+    createArrAtWorldData(region);
     addCountriesAndElements(data,region,regions[region].div);
   }catch(e){
     console.log(e);
@@ -130,7 +150,8 @@ async function getDataforCountry(country,region){
     // console.log(result);
     const data = await  result.json();
     // console.log(data);
-    storecountryDetailsObj(region,data)
+    storecountryDetailsObj(region,data);
+    storecountryDetailsArr(region,data);
   }catch(e){
     console.log(e);
   }
@@ -166,11 +187,25 @@ function storecountryDetailsObj(region,data){
   }
 }
 
-function regionincludeCountryesArr(region,data){
+function storecountryDetailsArr(region,data){
+  worldDataArr[region].name.push(data.data.name);
+  worldDataArr[region].confirmed.push(data.data.latest_data.confirmed);
+  worldDataArr[region].deaths.push(data.data.latest_data.deaths);
+  worldDataArr[region].recovered.push(data.data.latest_data.recovered);
+  worldDataArr[region].critical.push(data.data.latest_data.critical);
+ 
+}
 
+function createArrAtWorldData(region){
+  worldDataArr[region].name = [];
+  worldDataArr[region].confirmed = [];
+  worldDataArr[region].deaths = [];
+  worldDataArr[region].recovered = [];
+  worldDataArr[region].critical = [];
 }
 
 function createStatButtons(){
+  
   console.log('hey');
   const statContainer = document.createElement('div');
   const confirmed = document.createElement('button');
@@ -187,21 +222,13 @@ function createStatButtons(){
 
 // getDataforCountry('AZ');
 
-function createChart(stat,region){
-  switch(stat){
-    case 'confirmed':
-      labels = regionincludeCountryes.region;
-      data.data = []
-      break;
-    case 'deaths':
-      break;
-    case 'recoverd':
-      break;
-    case 'critical':
-      break;
-  }
-  const myChart = new Chart(
-    document.getElementById('myChart'),
-    config
-  );
+function updateChart(){
+  myChart.data.labels = worldDataArr.asia.name;
+  myChart.data.datasets = [{
+    label: 'ohhuuuweeee',
+    backgroundColor: 'rgb(255, 99, 132)',
+    borderColor: 'rgb(255, 99, 132)',
+    data: worldDataArr.asia.confirmed,
+  }]
+ myChart.update();
 }
