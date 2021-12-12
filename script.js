@@ -1,33 +1,6 @@
-// create buttons 
-// get the countries the each continent 
-// get ditails of each country:
-// Confirmed Cases
-// - Number of Deaths
-// - Number of recovered
-// - Number of critical condition 
-// 
-//
-//
-//
-// 
-//
 
-// const labels = [
-//   'January',
-//   'February',
-//   'March',
-//   'April',
-//   'May',
-//   'June',
-// ];
 const data = {
-  // labels: labels,
-  // datasets: [{
-  //   label: 'My First dataset',
-  //   backgroundColor: 'rgb(255, 99, 132)',
-  //   borderColor: 'rgb(255, 99, 132)',
-  //   data: [0, 10, 5, 2, 20, 30, 45],
-  // }]
+  
 };
 
 let continentConfig = {
@@ -45,8 +18,6 @@ let countryConfig = {
     responsive: true,
   }
 };
-
-
 
 const regions = {
   asia: {name: 'asia'},
@@ -76,7 +47,6 @@ const worldDataArr = {
   americas: {}
 }
 
-
 let statButtonsWasCalled = false;
 let selectedRegion = '';
 
@@ -97,14 +67,7 @@ const statAndContinentContainer = document.querySelector('.stat-and-continent-co
 const chartContainer = document.querySelector('.chart-container');
 const countriesAndSmallChartContainer = document.querySelector('.countries-and-small-chart-container');
 
-
-
-
-
 createEventlistenerForContinent();
-
-
-//  console.log(regionButtons); 
 
 function createEventlistenerForContinent(){
   regionButtons.forEach((region)=>{
@@ -121,7 +84,7 @@ function createEventlistenerForContinent(){
        statButtonsWasCalled=true;
      }
     selectedRegion = theregion;
-    resetContinentChart();
+    resetCharts();
     console.log(worldDataArr);
     })
   })
@@ -135,8 +98,6 @@ async function getCountrysByRegion(region){
     const data = await result.json();
     createArrAtWorldData(region);
     addCountriesAndElements(data,region,regions[region].div);
-   
-
   }catch(e){
     console.log(e);
   }
@@ -150,15 +111,6 @@ async function getCountrysByRegion(region){
    })
 }
 
-// function addAllCountriesToAllRegions(){
-//   regions.forEach((region)=>{
-//     getCountrysByRegion(region.name);
-//   })
-// }
-
-// addAllCountriesToAllRegions();
-// console.log(regionincludeCountryes);
-
 async function getDataforCountry(country,region){
   try{
     const result = await fetch(`https://intense-mesa-62220.herokuapp.com/https://corona-api.com/countries/${country}`);
@@ -171,7 +123,6 @@ async function getDataforCountry(country,region){
     console.log(e);
   }
 }
-// getDataforCountry('AZ');
 
 function addCountriesButtons(country,divElement){
   const btn = document.createElement('button');
@@ -261,27 +212,25 @@ function updateCountryChart(country,data){
   countryChart.data.labels = ['confirmed','newCases','deaths','newDeaths','recovered','critical'];
   countryChart.data.datasets = [{
     label: country,
-    backgroundColor: 'rgb(255, 99, 132)',
+    backgroundColor: ['cadetblue','crimson','darkgoldenrod','goldenrod','peru','plum'],
     borderColor: 'rgb(255, 99, 132)',
     data: [data.confirmed,data.newCases,data.deaths,data.newDeaths,data.recovered,data.critical],
   }]
  countryChart.update();
 }
 
-function resetContinentChart(){
+function resetCharts(){
   continentChart.data.labels = [];
   continentChart.data.datasets = [{
     label: "",
     data: [],
   }]
- continentChart.update();
-}
-
-function resetCountryChart(){
- countryChart.data.labels = [];
+  countryChart.data.labels = [];
  countryChart.data.datasets = [{
     label: "",
     data: [],
   }]
-countryChart.update();
+ continentChart.update();
+ countryChart.update();
 }
+
