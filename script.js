@@ -1,5 +1,5 @@
 
-const data = { //data for th charts
+const data = { //data for the charts
   
 };
 
@@ -78,19 +78,19 @@ function createEventlistenerForContinent(){
      }
      countriesAndSmallChartContainer.prepend(regions[theregion].div);//add the div that store all the countries buttons
      regions[theregion].wasFetched = true;
-     if(!statButtonsWasCalled){
+     if(!statButtonsWasCalled){ //checks if the stat buttons already exist on the screen
        createStatButtons();
        statButtonsWasCalled=true;
      }
     selectedRegion = theregion;
     resetCharts();
-    console.log(worldDataArr);
     })
   })
 }
 
-createEventlistenerForContinent();
+createEventlistenerForContinent(); 
 
+//the function that fetchs tha data and store it in the relevant objects
 async function getCountrysByRegion(region){
   createDivElement(region);
   try{
@@ -98,7 +98,7 @@ async function getCountrysByRegion(region){
     // console.log(result);
     const data = await result.json();
     createArrAtWorldData(region);
-    addCountriesAndElements(data,region,regions[region].div);
+    addCountriesAndElements(data,region,regions[region].div); //create the countries buttons
   }catch(e){
     console.log(e);
   }
@@ -111,7 +111,7 @@ async function getCountrysByRegion(region){
    })
 }
 
-async function getDataforCountry(country,region){
+async function getDataforCountry(country,region){ //fetches the covid data for each country
   try{
     const result = await fetch(`https://intense-mesa-62220.herokuapp.com/https://corona-api.com/countries/${country}`);
     // console.log(result);
@@ -124,26 +124,24 @@ async function getDataforCountry(country,region){
   }
 }
 
-function addCountriesButtons(country,divElement){
+function addCountriesButtons(country,divElement){ 
   const btn = document.createElement('button');
   btn.textContent = country;
   divElement.appendChild(btn);
 }
 
-function createDivElement(region){
+function createDivElement(region){ //create the div that store the countries buttons and also add event listener to the div only
   const countriesContainer = document.createElement('div');
   countriesContainer.classList.add('countries-container');
   countriesContainer.addEventListener('click',(e)=>{
     let country = e.target.textContent.split(' ').join('');
     updateCountryChart(e.target.textContent,worldDataObj[region][country]);
-    console.log(e.target.textContent);
   })
   regions[region].div = countriesContainer;
 }
 
 function storecountryDetailsObj(region,data){
   const name = data.data.name.split(' ').join('');
-  // console.log(region);
   worldDataObj[region][name] = 
   {
     confirmed: data.data.latest_data.confirmed,
@@ -155,16 +153,15 @@ function storecountryDetailsObj(region,data){
   }
 }
 
-function storecountryDetailsArr(region,data){
+function storecountryDetailsArr(region,data){ //store the data structered with array for the country chart
   worldDataArr[region].country.push(data.data.name);
   worldDataArr[region].confirmed.push(data.data.latest_data.confirmed);
   worldDataArr[region].deaths.push(data.data.latest_data.deaths);
   worldDataArr[region].recovered.push(data.data.latest_data.recovered);
   worldDataArr[region].critical.push(data.data.latest_data.critical);
- 
 }
 
-function createArrAtWorldData(region){
+function createArrAtWorldData(region){ //assign an empty array the the propertis for easy life after
   worldDataArr[region].country = [];
   worldDataArr[region].confirmed = [];
   worldDataArr[region].deaths = [];
@@ -172,9 +169,7 @@ function createArrAtWorldData(region){
   worldDataArr[region].critical = [];
 }
 
-function createStatButtons(){
-  
-  console.log('hey');
+function createStatButtons(){//create the confirm/critical... buttons
   const statContainer = document.createElement('div');
   const confirmed = document.createElement('button');
   confirmed.textContent = 'confirmed';
@@ -192,12 +187,11 @@ function createStatButtons(){
   statAndContinentContainer.prepend(statContainer);
 }
 
-function continentChartEventListener(e){
+function continentChartEventListener(e){ //add event listener to continent chart stat buttons
   updateContinentChart(selectedRegion,e.target.textContent)
-  // console.log(e.target.textContent);
 }
 
-function updateContinentChart(region,stat){
+function updateContinentChart(region,stat){ //every click the function updates the chart
   continentChart.data.labels = worldDataArr[region].country;
   continentChart.data.datasets = [{
     label: stat,
@@ -208,7 +202,7 @@ function updateContinentChart(region,stat){
  continentChart.update();
 }
 
-function updateCountryChart(country,data){
+function updateCountryChart(country,data){ //every click the function updates the chart
   countryChart.data.labels = ['confirmed','newCases','deaths','newDeaths','recovered','critical'];
   countryChart.data.datasets = [{
     label: country,
@@ -219,7 +213,7 @@ function updateCountryChart(country,data){
  countryChart.update();
 }
 
-function resetCharts(){
+function resetCharts(){ //reset the charts when the user click a continent button
   continentChart.data.labels = [];
   continentChart.data.datasets = [{
     label: "",
