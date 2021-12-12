@@ -30,8 +30,16 @@ const data = {
   // }]
 };
 
-let config = {
-  type: 'line',
+let continentConfig = {
+  type: 'bar',
+  data: data,
+  options: {
+    responsive: true,
+  }
+};
+
+let countryConfig = {
+  type: 'doughnut',
   data: data,
   options: {
     responsive: true,
@@ -73,9 +81,13 @@ let statButtonsWasCalled = false;
 let selectedRegion = '';
 
 
-const myChart = new Chart(
-  document.getElementById('myChart'),
-  config
+const continentChart = new Chart(
+  document.getElementById('continent-chart'),
+  continentConfig
+);
+const countryChart = new Chart(
+  document.getElementById('country-chart'),
+  countryConfig
 );
 
 
@@ -83,6 +95,7 @@ const regionButtons = document.querySelectorAll('.continent-btn');
 const container = document.querySelector('.container');
 const statAndContinentContainer = document.querySelector('.stat-and-continent-container');
 const chartContainer = document.querySelector('.chart-container');
+const countriesAndSmallChartContainer = document.querySelector('.countries-and-small-chart-container');
 
 
 
@@ -95,20 +108,20 @@ createEventlistenerForContinent();
 
 function createEventlistenerForContinent(){
   regionButtons.forEach((region)=>{
+    const theregion = region.textContent;
     region.addEventListener('click',function(e){
-     container.removeChild(container.lastChild);
-     if(!regions[region.textContent].wasFetched){
-       getCountrysByRegion(region.textContent);
+      countriesAndSmallChartContainer.removeChild(countriesAndSmallChartContainer.firstChild);
+     if(!regions[theregion].wasFetched){
+       getCountrysByRegion(theregion);
      }
-     container.appendChild(regions[region.textContent].div);
-     regions[region.textContent].wasFetched = true;
+     countriesAndSmallChartContainer.prepend(regions[theregion].div);
+     regions[theregion].wasFetched = true;
      if(!statButtonsWasCalled){
        createStatButtons();
        statButtonsWasCalled=true;
      }
-    
-     updateChart();
-     
+    selectedRegion = theregion;
+    resetContinentChart();
     console.log(worldDataArr);
     })
   })
@@ -122,6 +135,8 @@ async function getCountrysByRegion(region){
     const data = await result.json();
     createArrAtWorldData(region);
     addCountriesAndElements(data,region,regions[region].div);
+   
+
   }catch(e){
     console.log(e);
   }
@@ -166,8 +181,10 @@ function addCountriesButtons(country,divElement){
 
 function createDivElement(region){
   const countriesContainer = document.createElement('div');
-  countriesContainer.classList.add('countries-conrainer');
+  countriesContainer.classList.add('countries-container');
   countriesContainer.addEventListener('click',(e)=>{
+    let country = e.target.textContent.split(' ').join('');
+    updateCountryChart(e.target.textContent,worldDataObj[region][country]);
     console.log(e.target.textContent);
   })
   regions[region].div = countriesContainer;
@@ -178,17 +195,17 @@ function storecountryDetailsObj(region,data){
   // console.log(region);
   worldDataObj[region][name] = 
   {
-    confirmedCases: data.data.latest_data.confirmed,
-    NumberOfDeaths: data.data.latest_data.deaths,
-    NumberOfRrecovered: data.data.latest_data.recovered,
-    NumberOfCriticalCondition: data.data.latest_data.critical,
+    confirmed: data.data.latest_data.confirmed,
+    deaths: data.data.latest_data.deaths,
+    recovered: data.data.latest_data.recovered,
+    critical: data.data.latest_data.critical,
     newCases: data.data.today.confirmed,
     newDeaths: data.data.today.deaths
   }
 }
 
 function storecountryDetailsArr(region,data){
-  worldDataArr[region].name.push(data.data.name);
+  worldDataArr[region].country.push(data.data.name);
   worldDataArr[region].confirmed.push(data.data.latest_data.confirmed);
   worldDataArr[region].deaths.push(data.data.latest_data.deaths);
   worldDataArr[region].recovered.push(data.data.latest_data.recovered);
@@ -197,7 +214,7 @@ function storecountryDetailsArr(region,data){
 }
 
 function createArrAtWorldData(region){
-  worldDataArr[region].name = [];
+  worldDataArr[region].country = [];
   worldDataArr[region].confirmed = [];
   worldDataArr[region].deaths = [];
   worldDataArr[region].recovered = [];
@@ -210,25 +227,61 @@ function createStatButtons(){
   const statContainer = document.createElement('div');
   const confirmed = document.createElement('button');
   confirmed.textContent = 'confirmed';
+  confirmed.addEventListener('click',continentChartEventListener);
   const deaths = document.createElement('button');
   deaths.textContent = 'deaths';
-  const recoverd = document.createElement('button');
-  recoverd.textContent = 'recoverd';
+  deaths.addEventListener('click',continentChartEventListener);
+  const recovered = document.createElement('button');
+  recovered.textContent = 'recovered';
+  recovered.addEventListener('click',continentChartEventListener);
   const critical = document.createElement('button');
   critical.textContent = 'critical';
-  statContainer.append(confirmed,deaths,recoverd,critical);
+  critical.addEventListener('click',continentChartEventListener);
+  statContainer.append(confirmed,deaths,recovered,critical);
   statAndContinentContainer.prepend(statContainer);
 }
 
-// getDataforCountry('AZ');
+function continentChartEventListener(e){
+  updateContinentChart(selectedRegion,e.target.textContent)
+  // console.log(e.target.textContent);
+}
 
-function updateChart(){
-  myChart.data.labels = worldDataArr.asia.name;
-  myChart.data.datasets = [{
-    label: 'ohhuuuweeee',
+function updateContinentChart(region,stat){
+  continentChart.data.labels = worldDataArr[region].country;
+  continentChart.data.datasets = [{
+    label: stat,
     backgroundColor: 'rgb(255, 99, 132)',
     borderColor: 'rgb(255, 99, 132)',
-    data: worldDataArr.asia.confirmed,
+    data: worldDataArr[region][stat],
   }]
- myChart.update();
+ continentChart.update();
+}
+
+function updateCountryChart(country,data){
+  countryChart.data.labels = ['confirmed','newCases','deaths','newDeaths','recovered','critical'];
+  countryChart.data.datasets = [{
+    label: country,
+    backgroundColor: 'rgb(255, 99, 132)',
+    borderColor: 'rgb(255, 99, 132)',
+    data: [data.confirmed,data.newCases,data.deaths,data.newDeaths,data.recovered,data.critical],
+  }]
+ countryChart.update();
+}
+
+function resetContinentChart(){
+  continentChart.data.labels = [];
+  continentChart.data.datasets = [{
+    label: "",
+    data: [],
+  }]
+ continentChart.update();
+}
+
+function resetCountryChart(){
+ countryChart.data.labels = [];
+ countryChart.data.datasets = [{
+    label: "",
+    data: [],
+  }]
+countryChart.update();
 }
