@@ -48,10 +48,11 @@ button:hover{
 .countries-and-small-chart-container{
   display: flex;
   margin-top: 2rem;
+  /* justify-content: space-around; */
 }
 
 .countries-container{
-  width: 40%;
+  width: 50%;
 }
 
 .small-chart{

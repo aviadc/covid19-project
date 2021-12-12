@@ -1,9 +1,9 @@
 
-const data = {
+const data = { //data for th charts
   
 };
 
-let continentConfig = {
+let continentConfig = { //for continent chart
   type: 'bar',
   data: data,
   options: {
@@ -11,7 +11,7 @@ let continentConfig = {
   }
 };
 
-let countryConfig = {
+let countryConfig = {  //for country chart
   type: 'doughnut',
   data: data,
   options: {
@@ -19,27 +19,25 @@ let countryConfig = {
   }
 };
 
-const regions = {
+// store Additionally the div element of the countries 
+//and a property : 'wasfetched' that indicate if the data of the country was already fetched
+const regions = { 
   asia: {name: 'asia'},
   europe: {name: 'europe'},
   americas: {name: 'americas'},
   africa: {name: 'africa'}
 };
   
-const regionincludeCountryes = {
-  asia: [],
-  europe: [],
-  americas: [],
-  africa: [],
-}
-
+// the object that store the data for country chart, 
+//the structure is chain of objects : world.region.country: data 
 const worldDataObj = {
   asia: {},
   africa: {},
   europe: {},
   americas: {}
 };
-
+// the object that store the data for continent chart, 
+//the structure is arrays of data : world.region.(many arrays of data, for exmple data.confirmed)
 const worldDataArr = {
   asia: {},
   africa: {},
@@ -47,14 +45,16 @@ const worldDataArr = {
   americas: {}
 }
 
-let statButtonsWasCalled = false;
-let selectedRegion = '';
+let statButtonsWasCalled = false; //indicate if the confirmed/critical.. buttons were created
+let selectedRegion = ''; //indicate which continent button was pressed
+const colors =  ['cadetblue','crimson','springgreen','goldenrod','navy','plum','orange','khaki']; // for the continent charts
 
-
+//the continent chart variable
 const continentChart = new Chart(
   document.getElementById('continent-chart'),
   continentConfig
 );
+//the country chart variable
 const countryChart = new Chart(
   document.getElementById('country-chart'),
   countryConfig
@@ -62,22 +62,21 @@ const countryChart = new Chart(
 
 
 const regionButtons = document.querySelectorAll('.continent-btn');
-const container = document.querySelector('.container');
 const statAndContinentContainer = document.querySelector('.stat-and-continent-container');
 const chartContainer = document.querySelector('.chart-container');
 const countriesAndSmallChartContainer = document.querySelector('.countries-and-small-chart-container');
 
-createEventlistenerForContinent();
+
 
 function createEventlistenerForContinent(){
   regionButtons.forEach((region)=>{
     const theregion = region.textContent;
     region.addEventListener('click',function(e){
-      countriesAndSmallChartContainer.removeChild(countriesAndSmallChartContainer.firstChild);
-     if(!regions[theregion].wasFetched){
-       getCountrysByRegion(theregion);
+      countriesAndSmallChartContainer.removeChild(countriesAndSmallChartContainer.firstChild); //remove the div that store all the countries buttins
+     if(!regions[theregion].wasFetched){ //checks if the data already fetched
+       getCountrysByRegion(theregion); //fetch the data
      }
-     countriesAndSmallChartContainer.prepend(regions[theregion].div);
+     countriesAndSmallChartContainer.prepend(regions[theregion].div);//add the div that store all the countries buttons
      regions[theregion].wasFetched = true;
      if(!statButtonsWasCalled){
        createStatButtons();
@@ -89,6 +88,8 @@ function createEventlistenerForContinent(){
     })
   })
 }
+
+createEventlistenerForContinent();
 
 async function getCountrysByRegion(region){
   createDivElement(region);
@@ -107,7 +108,6 @@ async function getCountrysByRegion(region){
    data.forEach((country)=>{
     addCountriesButtons(country.name.common,divElement);
     getDataforCountry(country.cca2,region);
-    regionincludeCountryes[region].push({name: country.name.common ,cca2: country.cca2});
    })
 }
 
@@ -201,7 +201,7 @@ function updateContinentChart(region,stat){
   continentChart.data.labels = worldDataArr[region].country;
   continentChart.data.datasets = [{
     label: stat,
-    backgroundColor: 'rgb(255, 99, 132)',
+    backgroundColor: colors[Math.floor(Math.random()*colors.length)],
     borderColor: 'rgb(255, 99, 132)',
     data: worldDataArr[region][stat],
   }]
@@ -212,7 +212,7 @@ function updateCountryChart(country,data){
   countryChart.data.labels = ['confirmed','newCases','deaths','newDeaths','recovered','critical'];
   countryChart.data.datasets = [{
     label: country,
-    backgroundColor: ['cadetblue','crimson','darkgoldenrod','goldenrod','peru','plum'],
+    backgroundColor: ['cadetblue','crimson','springgreen','goldenrod','navy','plum'],
     borderColor: 'rgb(255, 99, 132)',
     data: [data.confirmed,data.newCases,data.deaths,data.newDeaths,data.recovered,data.critical],
   }]
